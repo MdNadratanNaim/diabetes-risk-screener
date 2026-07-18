@@ -1,0 +1,25 @@
+{
+  "xgboost": {
+    "best_score": 0.43905474243701753,
+    "metric": "average_precision (5-fold stratified CV)",
+    "best_params": {
+      "n_estimators": 780,
+      "early_stopping_rounds": null,
+      "max_depth": 6,
+      "learning_rate": 0.025498298951423793,
+      "subsample": 0.6453996032539314,
+      "colsample_bytree": 0.6174535684271815,
+      "colsample_bylevel": 0.6511868134825287,
+      "min_child_weight": 11,
+      "gamma": 1.701286816776035,
+      "reg_alpha": 14.68840225116269,
+      "reg_lambda": 56.281564378353714,
+      "scale_pos_weight": 6.039639221858498,
+      "objective": "binary:logistic",
+      "eval_metric": "aucpr",
+      "tree_method": "hist",
+      "booster": "gbtree"
+    },
+    "updated_at": "2026-07-18T10:05:10.956667"
+  }
+}

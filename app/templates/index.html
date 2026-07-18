@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetes Risk Screener</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.ico">
+<style>
+  :root {
+    --paper:#F5F7F6; --panel:#FFFFFF; --ink:#16232B; --ink-soft:#5B6B72;
+    --hairline:#DCE3E1; --teal:#1F6F6B; --teal-dark:#154F4C;
+    --sage:#4C8B5D; --amber:#C98A2C; --coral:#B8503F;
+    --radius:10px;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; line-height:1.5;
+  }
+  .wrap { max-width:680px; margin:0 auto; padding:32px 20px 80px; }
+  .mark { display:flex; align-items:center; gap:8px; color:var(--teal); }
+  .mark svg { width:22px; height:22px; }
+  .eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+  h1 {
+    font-family:'IBM Plex Serif',serif; font-weight:600;
+    font-size:32px; margin:14px 0 6px;
+  }
+  .sub { color:var(--ink-soft); margin:0 0 18px; max-width:46ch; }
+  .pulse { width:100%; height:36px; display:block; margin-bottom:8px; }
+  .pulse path {
+    fill:none; stroke:var(--teal); stroke-width:2;
+    stroke-dasharray:900; stroke-dashoffset:900;
+    animation:draw 1.4s ease-out forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset:0; } }
+  @media (prefers-reduced-motion:reduce) { .pulse path { animation:none; stroke-dashoffset:0; } }
+
+  .panel {
+    background:var(--panel); border:1px solid var(--hairline);
+    border-radius:var(--radius); padding:20px; margin-bottom:16px;
+  }
+  .panel-head {
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); margin-bottom:16px;
+  }
+  .panel-head::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0; }
+
+  .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px; }
+  .field-wide { grid-column:1 / -1; }
+  .field label { display:block; font-size:14px; margin-bottom:6px; color:var(--ink); }
+  .field .hint { font-size:12px; color:var(--ink-soft); font-weight:400; }
+  .field select, .field input[type="number"] {
+    width:100%; padding:10px 12px; border:1px solid var(--hairline);
+    border-radius:8px; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif; font-size:14px;
+  }
+  .field select:focus, .field input:focus { outline:2px solid var(--teal); outline-offset:1px; }
+  .mono { font-family:'IBM Plex Mono',monospace; }
+
+  .segmented { display:inline-flex; border:1px solid var(--hairline); border-radius:8px; overflow:hidden; width:100%; }
+  .segmented input { position:absolute; opacity:0; pointer-events:none; }
+  .segmented label {
+    flex:1; text-align:center; padding:9px 6px; font-size:13px; cursor:pointer;
+    color:var(--ink-soft); border-right:1px solid var(--hairline);
+  }
+  .segmented label:last-of-type { border-right:none; }
+  .segmented input:checked + label { background:var(--teal); color:#fff; }
+  .segmented input:focus-visible + label { outline:2px solid var(--teal-dark); outline-offset:-2px; }
+
+  .toggle-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid var(--hairline);
+  }
+  .toggle-row:last-child { border-bottom:none; }
+  .row-label { font-size:14px; }
+  .yn-toggle { display:inline-flex; border:1px solid var(--hairline); border-radius:20px; overflow:hidden; }
+  .yn-toggle input { position:absolute; opacity:0; pointer-events:none; }
+  .yn-toggle label { padding:6px 14px; font-size:13px; color:var(--ink-soft); cursor:pointer; }
+  .yn-toggle input:checked + label { background:var(--teal); color:#fff; }
+  .yn-toggle input:focus-visible + label { outline:2px solid var(--teal-dark); }
+
+  input[type="range"] { width:100%; accent-color:var(--teal); }
+
+  .cta {
+    width:100%; padding:14px; margin-top:6px;
+    background:var(--teal); color:#fff; border:none; border-radius:8px;
+    font-size:15px; font-weight:600; font-family:'IBM Plex Sans',sans-serif; cursor:pointer;
+  }
+  .cta:hover { background:var(--teal-dark); }
+  .cta:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+
+  /* --- Result view --- */
+  .result { background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius); padding:28px; }
+  .badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 14px; border-radius:20px; font-weight:600; font-size:14px; margin-bottom:20px;
+  }
+  .badge svg { width:16px; height:16px; }
+  .badge.low { background:#E8F1EA; color:var(--sage); }
+  .badge.moderate { background:#F7EDDD; color:var(--amber); }
+  .badge.high { background:#F5E4E1; color:var(--coral); }
+
+  .readouts { display:flex; gap:32px; margin-bottom:24px; }
+  .readout .num { display:block; font-family:'IBM Plex Mono',monospace; font-size:30px; font-weight:500; }
+  .readout .cap { font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; }
+
+  .result h3 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); margin:0 0 10px; }
+  .result ul { list-style:none; padding:0; margin:0 0 22px; }
+  .result li { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:14px; }
+  .result li svg { width:15px; height:15px; flex-shrink:0; }
+  .factors li svg { color:var(--coral); }
+  .recommendations li svg { color:var(--sage); }
+
+  .again { display:inline-block; margin-top:6px; color:var(--teal); font-size:14px; text-decoration:none; }
+  .again:hover { text-decoration:underline; }
+
+  .disclaimer { font-size:12px; color:var(--ink-soft); margin-top:22px; max-width:56ch; }
+
+  @media (max-width:560px) {
+    .field-grid { grid-template-columns:1fr; }
+    .readouts { gap:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M2 12h4l2-7 4 14 3-9 2 4h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="eyebrow">Health Risk Screener</span>
+    </div>
+    <h1>Diabetes Prediction</h1>
+    <p class="sub">Assess your diabetes risk using lifestyle and health indicators.</p>
+    <svg class="pulse" viewBox="0 0 600 36" preserveAspectRatio="none">
+      <path d="M0 18 L230 18 L245 4 L262 32 L278 18 L600 18"/>
+    </svg>
+  </header>
+
+  {% if not result %}
+  <form method="post" action="/predict">
+
+    <section class="panel">
+      <div class="panel-head">Personal Information</div>
+      <div class="field-grid">
+        <div class="field field-wide">
+          <label>Gender</label>
+          <div class="segmented">
+            <input type="radio" id="sex-f" name="Sex" value="0" checked><label for="sex-f">Female</label>
+            <input type="radio" id="sex-m" name="Sex" value="1"><label for="sex-m">Male</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="Age">Age</label>
+          <select id="Age" name="Age" required>
+            <option value="1">18–24</option><option value="2">25–29</option>
+            <option value="3">30–34</option><option value="4">35–39</option>
+            <option value="5">40–44</option><option value="6">45–49</option>
+            <option value="7" selected>50–54</option><option value="8">55–59</option>
+            <option value="9">60–64</option><option value="10">65–69</option>
+            <option value="11">70–74</option><option value="12">75–79</option>
+            <option value="13">80 or older</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="Income">Income</label>
+          <select id="Income" name="Income" required>
+            <option value="1">Under $10,000</option>
+            <option value="2">$10,000–$15,000</option>
+            <option value="3">$15,000–$20,000</option>
+            <option value="4">$20,000–$25,000</option>
+            <option value="5" selected>$25,000–$35,000</option>
+            <option value="6">$35,000–$50,000</option>
+            <option value="7">$50,000–$75,000</option>
+            <option value="8">$75,000 or more</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="Education">Education</label>
+          <select id="Education" name="Education" required>
+            <option value="1">Never attended / kindergarten only</option>
+            <option value="2">Elementary (grades 1–8)</option>
+            <option value="3">Some high school (grades 9–11)</option>
+            <option value="4">High school graduate / GED</option>
+            <option value="5" selected>Some college or technical school</option>
+            <option value="6">College graduate</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">Lifestyle</div>
+      {% for name, label, default in [
+        ('Smoker','Smoker','0'),
+        ('PhysActivity','Physical Activity','1'),
+        ('Fruits','Eats Fruit Regularly','1'),
+        ('Veggies','Eats Vegetables Regularly','1'),
+        ('HvyAlcoholConsump','Heavy Alcohol Consumption','0')
+      ] %}
+      <div class="toggle-row">
+        <span class="row-label">{{ label }}</span>
+        <div class="yn-toggle" role="radiogroup" aria-label="{{ label }}">
+          <input type="radio" id="{{ name }}-0" name="{{ name }}" value="0" {% if default == '0' %}checked{% endif %}><label for="{{ name }}-0">No</label>
+          <input type="radio" id="{{ name }}-1" name="{{ name }}" value="1" {% if default == '1' %}checked{% endif %}><label for="{{ name }}-1">Yes</label>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">Medical History</div>
+      {% for name, label in [
+        ('HighBP','High Blood Pressure'),
+        ('HighChol','High Cholesterol'),
+        ('Stroke','Previous Stroke'),
+        ('HeartDiseaseorAttack','Heart Disease or Heart Attack'),
+        ('DiffWalk','Difficulty Walking')
+      ] %}
+      <div class="toggle-row">
+        <span class="row-label">{{ label }}</span>
+        <div class="yn-toggle" role="radiogroup" aria-label="{{ label }}">
+          <input type="radio" id="{{ name }}-0" name="{{ name }}" value="0" checked><label for="{{ name }}-0">No</label>
+          <input type="radio" id="{{ name }}-1" name="{{ name }}" value="1"><label for="{{ name }}-1">Yes</label>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">Health Status</div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="BMI">BMI <span class="hint">e.g. 24.5</span></label>
+          <input type="number" step="0.1" min="10" max="80" id="BMI" name="BMI" value="25" required>
+        </div>
+        <div class="field">
+          <label for="MentHlth">Poor Mental Health Days <span class="mono" data-out>0</span><br>(In last 30 days)</label>
+          <input type="range" id="MentHlth" name="MentHlth" min="0" max="30" value="0">
+        </div>
+        <div class="field">
+          <label for="PhysHlth">Poor Physical Health Days <span class="mono" data-out>0</span><br>(In last 30 days)</label>
+          <input type="range" id="PhysHlth" name="PhysHlth" min="0" max="30" value="0">
+        </div>
+        <div class="field field-wide">
+          <label>General Health</label>
+          <div class="segmented">
+            <input type="radio" id="gh-1" name="GenHlth" value="1"><label for="gh-1">Excellent</label>
+            <input type="radio" id="gh-2" name="GenHlth" value="2"><label for="gh-2">Very Good</label>
+            <input type="radio" id="gh-3" name="GenHlth" value="3" checked><label for="gh-3">Good</label>
+            <input type="radio" id="gh-4" name="GenHlth" value="4"><label for="gh-4">Fair</label>
+            <input type="radio" id="gh-5" name="GenHlth" value="5"><label for="gh-5">Poor</label>
+          </div>
+        </div>
+      </div>
+      {% for name, label, default in [
+        ('CholCheck','Cholesterol Checked (Past 5 Years)','1'),
+        ('AnyHealthcare','Has Healthcare Coverage','1'),
+        ('NoDocbcCost',"Couldn't See Doctor Due to Cost",'0')
+      ] %}
+      <div class="toggle-row">
+        <span class="row-label">{{ label }}</span>
+        <div class="yn-toggle" role="radiogroup" aria-label="{{ label }}">
+          <input type="radio" id="{{ name }}-0" name="{{ name }}" value="0" {% if default == '0' %}checked{% endif %}><label for="{{ name }}-0">No</label>
+          <input type="radio" id="{{ name }}-1" name="{{ name }}" value="1" {% if default == '1' %}checked{% endif %}><label for="{{ name }}-1">Yes</label>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <button type="submit" class="cta">Predict Risk</button>
+  </form>
+
+  {% else %}
+  <section class="result">
+    <div class="badge {{ result.risk_category }}">
+      {% if result.risk_category == 'low' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+      {% elif result.risk_category == 'moderate' %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3z"/><line x1="12" y1="10" x2="12" y2="14"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+      {% else %}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+      {% endif %}
+      {{ result.risk_label }}
+    </div>
+
+    <div class="readouts">
+      <div class="readout"><span class="num">{{ (result.probability * 100) | round(1) }}%</span><span class="cap">Probability</span></div>
+      <!-- <div class="readout"><span class="num">{{ result.confidence }}%</span><span class="cap">Confidence</span></div> -->
+    </div>
+
+    {% if result.top_factors %}
+    <div class="factors">
+      <h3>Top Risk Factors</h3>
+      <ul>
+        {% for f in result.top_factors %}
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>{{ f.label }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if result.recommendations %}
+    <div class="recommendations">
+      <h3>Recommendations</h3>
+      <ul>
+        {% for r in result.recommendations %}
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>{{ r }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <a class="again" href="/">Take the screener again</a>
+  </section>
+  {% endif %}
+
+  <p class="disclaimer">
+    This is an educational screening tool built from self-reported survey data (BRFSS 2015), not a diagnostic
+    instrument. It is not medical advice — please consult a healthcare provider.
+  </p>
+</div>
+
+<script>
+  document.querySelectorAll('input[type="range"]').forEach(function (slider) {
+    var out = slider.closest('.field').querySelector('[data-out]');
+    slider.addEventListener('input', function () { out.textContent = slider.value; });
+  });
+</script>
+</body>
+</html>

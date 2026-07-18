@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- Smooth background gradient using your Teal and Teal-Dark variables -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F6F6B" /> <!-- --teal -->
+      <stop offset="100%" stop-color="#154F4C" /> <!-- --teal-dark -->
+    </linearGradient>
+  </defs>
+  
+  <!-- Modern Rounded Squircle Background -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#bgGrad)" />
+  
+  <!-- Sage Green Shadow (gives depth to the drop against the teal background) -->
+  <path d="M 32 16 C 32 16 16 36 16 46 A 16 16 0 0 0 48 46 C 48 36 32 16 32 16 Z" fill="#4C8B5D" transform="translate(0, 2)" />
+
+  <!-- Minimalist White Glucose/Blood Drop for high visibility -->
+  <path d="M 32 14 C 32 14 16 34 16 44 A 16 16 0 0 0 48 44 C 48 34 32 14 32 14 Z" fill="#FFFFFF" />
+  
+  <!-- Inner Medical Cross in Sage Green -->
+  <path d="M 30 38 H 34 V 42 H 38 V 46 H 34 V 50 H 30 V 46 H 26 V 42 H 30 Z" fill="#4C8B5D" />
+</svg>

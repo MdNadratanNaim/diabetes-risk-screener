@@ -1,0 +1,63 @@
+{
+  "model_name": "xgboost",
+  "trained_on": "2026-07-18T14:24:10.241671",
+  "trained_on_n_rows": 253680,
+  "hyperparameters": {
+    "n_estimators": 701,
+    "early_stopping_rounds": null,
+    "max_depth": 5,
+    "learning_rate": 0.016798955338674183,
+    "subsample": 0.7151535750646889,
+    "colsample_bytree": 0.6414204133752448,
+    "colsample_bylevel": 0.8369738924187721,
+    "min_child_weight": 14,
+    "gamma": 0.19398609034728032,
+    "reg_alpha": 3.726296320638177e-07,
+    "reg_lambda": 36.06799344152233,
+    "scale_pos_weight": 4.921810931643246,
+    "objective": "binary:logistic",
+    "eval_metric": "aucpr",
+    "tree_method": "hist",
+    "booster": "gbtree"
+  },
+  "decision_threshold": 0.6133623719215393,
+  "tuning_cv_score": 0.4390827285884832,
+  "test_set_average_precision": 0.4256212625818761,
+  "test_set_roc_auc": 0.827911126849133,
+  "features": [
+    "HighBP",
+    "HighChol",
+    "CholCheck",
+    "BMI",
+    "Smoker",
+    "Stroke",
+    "HeartDiseaseorAttack",
+    "PhysActivity",
+    "Fruits",
+    "Veggies",
+    "HvyAlcoholConsump",
+    "AnyHealthcare",
+    "NoDocbcCost",
+    "GenHlth",
+    "MentHlth",
+    "PhysHlth",
+    "DiffWalk",
+    "Sex",
+    "Age",
+    "Education",
+    "Income"
+  ],
+  "target": "Diabetes_binary",
+  "all_models_compared": [
+    {
+      "model": "xgboost",
+      "tuning_cv_score": 0.4390827285884832,
+      "test_average_precision": 0.4256212625818761,
+      "test_roc_auc": 0.827911126849133
+    }
+  ],
+  "library_versions": {
+    "xgboost": "3.3.0",
+    "scikit-learn": "1.9.0"
+  }
+}
