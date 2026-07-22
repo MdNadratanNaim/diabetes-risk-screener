@@ -1,25 +1,30 @@
 [project]
-name = "Diabetes_prediction"
-version = "1.0"
-description = ""
-readme = "README.md"
+name = "diabetes-risk-prediction"
+version = "1.0.0"
+description = "Diabetes risk screening FastAPI app"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.139.2",
+    "fastapi",
+    "uvicorn[standard]",
     "jinja2>=3.1.6",
     "joblib>=1.5.3",
-    "jupyter>=1.1.1",
-    "matplotlib>=3.11.1",
-    "numpy>=2.5.1",
-    "optuna>=4.9.0",
-    "pandas>=3.0.3",
-    "plotly>=6.9.0",
+    "numpy",
+    "pandas",
     "python-multipart>=0.0.32",
-    "scikit-learn>=1.9.0",
-    "seaborn>=0.13.2",
-    "uvicorn>=0.51.0",
-    "xgboost>=3.3.0",
+    "scikit-learn",
+    "xgboost",
+]
+
+[project.optional-dependencies]
+# Notebook/EDA/training tooling -- local-only, not installed in the deployed app's image.
+# uv sync --extra research
+research = [
+    "jupyter",
+    "matplotlib",
+    "optuna",
+    "plotly",
+    "seaborn",
 ]
 
 [tool.uv]
-constraint-dependencies = ["numba>=0.60", "llvmlite>=0.43"]
+override-dependencies = ["nvidia-nccl-cu12; python_version < '0'"]

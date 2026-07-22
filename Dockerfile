@@ -1,42 +1,31 @@
-# syntax=docker/dockerfile:1
+FROM python:3.12-slim
 
-# ---------- Build stage ----------
-FROM python:3.12-slim-trixie AS builder
-
-COPY --from=ghcr.io/astral-sh/uv:0.8.21 /uv /uvx /bin/
+# uv gives fast, reliable installs straight from pyproject.toml
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 
-ENV UV_COMPILE_BYTECODE=1 \
-    UV_LINK_MODE=copy \
-    UV_PYTHON_DOWNLOADS=0
-
-# Install deps first, separate from app code, for better layer caching
+# Copy dependency manifests first so Docker can cache this layer
+# separately from your application code. Copying uv.lock alongside
+# pyproject.toml lets us install the exact versions resolved and
+# tested locally, rather than re-resolving fresh at build time.
 COPY pyproject.toml uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-install-project --no-dev
 
-COPY app/ ./app/
-COPY model/ ./model/
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev
+# --no-install-project: only install the dependencies listed in
+# pyproject.toml — we don't need this project packaged/installed itself,
+# just its deps available to run main.py directly.
+# --frozen: fail the build instead of silently re-resolving if uv.lock
+# and pyproject.toml ever drift out of sync.
+RUN uv sync --no-install-project --frozen
 
-# ---------- Runtime stage ----------
-FROM python:3.12-slim-trixie AS runtime
-
-# xgboost needs libgomp at runtime (OpenMP) — without this the build succeeds
-# but the app crashes with an ImportError the moment it tries to load the model
-RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN groupadd -g 1001 appgroup \
-    && useradd -u 1001 -g appgroup -m -d /home/appuser -s /bin/false appuser
-
-WORKDIR /app
-COPY --from=builder --chown=appuser:appgroup /app /app
+# Now copy the actual application code and model artifacts.
+COPY main.py ./
+COPY app ./app
+COPY model ./model
 
 ENV PATH="/app/.venv/bin:$PATH"
-USER appuser
 
+# Render (and most PaaS platforms) inject $PORT at runtime — bind to it,
+# don't hardcode 8000.
 EXPOSE 8000
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -21,20 +21,14 @@ class DiabetesRiskInput(BaseModel):
     HvyAlcoholConsump: int = Field(..., ge=0, le=1)
     AnyHealthcare: int = Field(..., ge=0, le=1)
     NoDocbcCost: int = Field(..., ge=0, le=1)
-    GenHlth: int = Field(..., ge=1, le=5)       # 1=excellent ... 5=poor
-    MentHlth: int = Field(..., ge=0, le=30)      # days in past 30
-    PhysHlth: int = Field(..., ge=0, le=30)      # days in past 30
+    GenHlth: int = Field(..., ge=1, le=5)
+    MentHlth: int = Field(..., ge=0, le=30)
+    PhysHlth: int = Field(..., ge=0, le=30)
     DiffWalk: int = Field(..., ge=0, le=1)
     Sex: int = Field(..., ge=0, le=1)
-    Age: int = Field(..., ge=1, le=13)           # BRFSS age bracket code
+    Age: int = Field(..., ge=1, le=13)
     Education: int = Field(..., ge=1, le=6)
     Income: int = Field(..., ge=1, le=8)
-
-
-class RiskResponse(BaseModel):
-    probability: float
-    risk_category: str
-    top_factors: Optional[list] = None
 
 
 class RiskResponse(BaseModel):

@@ -1,30 +1,37 @@
 ```text
 diabetes-risk-screener/
 ├── data/
-│   └── diabetes_binary_health_indicators_BRFSS2015.csv
+│   └── diabetes_binary_health_indicators_BRFSS2015.csv
+├── docs/
+│   └── file_structure.md
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
 ├── notebooks/
+│   ├── README.md
 │   ├── Data Analysis.ipynb
 │   ├── LogisticRegression_Hyperparameter_Tuning.ipynb
-│   ├── Model_Comparison_and_Deployment.ipynb
 │   ├── RandomForest_Hyperparameter_Tuning.ipynb
-│   ├── README.md
-│   └── XGBoost_Hyperparameter_Tuning.ipynb
+│   ├── XGBoost_Hyperparameter_Tuning.ipynb
+│   └── Model_Comparison_and_Deployment.ipynb
 ├── model/
 │   ├── model_metadata.json
 │   ├── model.pkl
 │   └── tuning_results.json
-├── app/                        # FastAPI app
-│   ├── main.py
-│   ├── schema.py
-│   └── templates/
+├── app/
+│   ├── __init__.py
+│   ├── schema.py
+│   └── templates/
 │       ├── favicon.ico
 │       ├── favicon.svg
 │       └── index.html
-├── Dockerfile
-├── pyproject.toml
 ├── README.md
+├── main.py
+├── pyproject.toml
 ├── uv.lock
-├── .python-version
+├── render.yaml
+├── Dockerfile
+├── .gitignore
 ├── .dockerignore
-└── .gitignore
+└── .python-version
 ```

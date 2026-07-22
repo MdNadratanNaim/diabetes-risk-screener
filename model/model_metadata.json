@@ -1,29 +1,29 @@
 {
   "model_name": "xgboost",
-  "trained_on": "2026-07-18T14:24:10.241671",
+  "trained_on": "2026-07-19T18:52:46.667008",
   "trained_on_n_rows": 253680,
   "hyperparameters": {
-    "n_estimators": 701,
+    "n_estimators": 780,
     "early_stopping_rounds": null,
-    "max_depth": 5,
-    "learning_rate": 0.016798955338674183,
-    "subsample": 0.7151535750646889,
-    "colsample_bytree": 0.6414204133752448,
-    "colsample_bylevel": 0.8369738924187721,
-    "min_child_weight": 14,
-    "gamma": 0.19398609034728032,
-    "reg_alpha": 3.726296320638177e-07,
-    "reg_lambda": 36.06799344152233,
-    "scale_pos_weight": 4.921810931643246,
+    "max_depth": 6,
+    "learning_rate": 0.025498298951423793,
+    "subsample": 0.6453996032539314,
+    "colsample_bytree": 0.6174535684271815,
+    "colsample_bylevel": 0.6511868134825287,
+    "min_child_weight": 11,
+    "gamma": 1.701286816776035,
+    "reg_alpha": 14.68840225116269,
+    "reg_lambda": 56.281564378353714,
+    "scale_pos_weight": 6.039639221858498,
     "objective": "binary:logistic",
     "eval_metric": "aucpr",
     "tree_method": "hist",
     "booster": "gbtree"
   },
-  "decision_threshold": 0.6133623719215393,
-  "tuning_cv_score": 0.4390827285884832,
-  "test_set_average_precision": 0.4256212625818761,
-  "test_set_roc_auc": 0.827911126849133,
+  "decision_threshold": 0.6462939977645874,
+  "tuning_cv_score": 0.43905474243701753,
+  "test_set_average_precision": 0.42623449016698806,
+  "test_set_roc_auc": 0.8280388019227151,
   "features": [
     "HighBP",
     "HighChol",
@@ -51,9 +51,21 @@
   "all_models_compared": [
     {
       "model": "xgboost",
-      "tuning_cv_score": 0.4390827285884832,
-      "test_average_precision": 0.4256212625818761,
-      "test_roc_auc": 0.827911126849133
+      "tuning_cv_score": 0.43905474243701753,
+      "test_average_precision": 0.42623449016698806,
+      "test_roc_auc": 0.8280388019227151
+    },
+    {
+      "model": "random_forest",
+      "tuning_cv_score": 0.4325472088519001,
+      "test_average_precision": 0.42041982174742476,
+      "test_roc_auc": 0.8252004490718269
+    },
+    {
+      "model": "logistic_regression",
+      "tuning_cv_score": 0.4060595440221927,
+      "test_average_precision": 0.3926345595095064,
+      "test_roc_auc": 0.819641735340059
     }
   ],
   "library_versions": {

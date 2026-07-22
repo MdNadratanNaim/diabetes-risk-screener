@@ -1,6 +1,14 @@
-.venv
+.git
+.gitignore
 __pycache__
 *.pyc
+.venv
+.venv-workers
+.pytest_cache
+.ipynb_checkpoints
+*.ipynb
 notebooks/
-data/
-.git
+scripts/
+README.md
+wrangler.jsonc
+.wrangler
